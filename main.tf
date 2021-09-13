@@ -131,3 +131,42 @@ resource "null_resource" "add_argocd_github_app_config_map" {
     EOT
   }
 }
+
+resource "null_resource" "add_argocd_server_tls_certificate" { 
+  depends_on = [null_resource.install_argocd]  
+  provisioner "local-exec" { 
+    command = <<-EOT
+      cat <<EOF | kubectl apply -f -
+      apiVersion: cert-manager.io/v1
+      kind: Certificate
+      metadata:
+        name: argocd-teokyllc-internal
+        namespace: argocd
+      spec:
+        secretName: argocd-server-tls
+        duration: 2160h # 90d
+        renewBefore: 360h # 15d
+        subject:
+          organizations:
+            - teokyllc
+        commonName: argo.teokyllc.internal
+        isCA: false
+        privateKey:
+          algorithm: RSA
+          encoding: PKCS1
+          size: 2048
+        usages:
+          - server auth
+          - client auth
+        dnsNames:
+          - argo.teokyllc.internal
+        ipAddresses:
+          - 10.1.0.5
+        issuerRef:
+          name: vault-issuer
+          kind: ClusterIssuer
+          group: cert-manager.io
+      EOF
+    EOT
+  }
+}
