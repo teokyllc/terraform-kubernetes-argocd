@@ -124,7 +124,7 @@ resource "null_resource" "add_argocd_github_app_config_map" {
         labels:
           argocd.argoproj.io/secret-type: repo-creds
       stringData:
-        url: https://github.com/teokyllc
+        url: "https://github.com/teokyllc"
         githubAppID: "${var.argo_git_app_id}"
         githubAppInstallationID: "${var.argo_git_app_installation_id}"
         githubAppPrivateKey: $PRIVATEKEY
