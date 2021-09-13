@@ -13,20 +13,24 @@ variable "aks_cluster_rg" {
     description = "The name of the resource group the AKS cluster is in."
 }
 
-variable "vault_token" {
-    type = string
-    description = "An admin token to use Vault."
-}
-
 variable "region" {
     type = string
     description = "The Azure region."
 }
 
+variable "github_app_private_key" {
+    type = string
+    description = "The Github app private key."
+}
+
 variable "argo_git_app_id" {
     type = string
     description = "The Github app id."
-    default = "116304"
+}
+
+variable "argo_git_app_installation_id" {
+    type = string
+    description = "The Github app installation id."
 }
 
 variable "argo_fqdn" {
@@ -42,12 +46,6 @@ variable "sso_login_url" {
 variable "sso_certificate" {
     type = string
     description = "The Azure AD SAML certificate for the app."
-}
-
-variable "argo_git_app_installation_id" {
-    type = string
-    description = "The Github app installation id."
-    default = "17064473"
 }
 
 variable "argo_aad_admin_group_id" {
