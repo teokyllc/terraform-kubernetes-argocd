@@ -1,17 +1,8 @@
 resource "null_resource" "setup_env" { 
   provisioner "local-exec" { 
     command = <<-EOT
-      # Add bins
-      curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-      chmod +x kubectl
-      
-      # Create kubeconfig
       mkdir ~/.kube
       echo "${var.aks_kubeconfig}" > ~/.kube/config
-      
-      # Setup Vault
-      wget https://releases.hashicorp.com/vault/1.8.2/vault_1.8.2_linux_amd64.zip
-      unzip vault_1.8.2_linux_amd64.zip
     EOT
   }
 }
@@ -20,14 +11,14 @@ resource "null_resource" "install_argocd" {
   depends_on = [null_resource.setup_env]  
   provisioner "local-exec" { 
     command = <<-EOT
-      ./kubectl create namespace argocd 
-      ./kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-      ./kubectl annotate svc argocd-server -n argocd service.beta.kubernetes.io/azure-load-balancer-internal=true
-      ./kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+      kubectl create namespace argocd 
+      kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      kubectl annotate svc argocd-server -n argocd service.beta.kubernetes.io/azure-load-balancer-internal=true
+      kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
       ip=""
       while [ -z $ip ]; do
         echo "Waiting for external IP"
-        ip=$(./kubectl get svc argocd-server --namespace argocd --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
+        ip=$(kubectl get svc argocd-server --namespace argocd --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
         [ -z "$ip" ] && sleep 10
       done
       echo $ip
@@ -39,7 +30,7 @@ resource "null_resource" "add_argocd_config_map" {
   depends_on = [null_resource.install_argocd]  
   provisioner "local-exec" { 
     command = <<-EOT
-      cat <<EOF | ./kubectl apply -f -
+      cat <<EOF | kubectl apply -f -
       apiVersion: v1
       kind: ConfigMap
       metadata:
@@ -96,7 +87,7 @@ resource "null_resource" "add_argocd_rbac_config_map" {
   depends_on = [null_resource.install_argocd]  
   provisioner "local-exec" { 
     command = <<-EOT
-      cat <<EOF | ./kubectl apply -f -
+      cat <<EOF | kubectl apply -f -
       apiVersion: v1
       kind: ConfigMap
       metadata:
@@ -123,10 +114,8 @@ resource "null_resource" "add_argocd_github_app_config_map" {
   depends_on = [null_resource.install_argocd]  
   provisioner "local-exec" { 
     command = <<-EOT
-      export VAULT_ADDR=https://vault.teokyllc.internal:8200
-      export VAULT_TOKEN=${var.vault_token}
-      PRIVATEKEY=$(./vault kv get --field=cert secrets/github-app-cert)
-      cat <<EOF | ./kubectl apply -f -
+      PRIVATEKEY=$(vault kv get --field=cert secrets/github-app-cert)
+      cat <<EOF | kubectl apply -f -
       apiVersion: v1
       kind: Secret
       metadata:
