@@ -127,7 +127,7 @@ resource "null_resource" "add_argocd_github_app_config_map" {
         url: "https://github.com/teokyllc"
         githubAppID: "${var.argo_git_app_id}"
         githubAppInstallationID: "${var.argo_git_app_installation_id}"
-        githubAppPrivateKey: $PRIVATEKEY
+        githubAppPrivateKey: "$PRIVATEKEY"
       EOF
     EOT
   }
