@@ -114,7 +114,7 @@ resource "null_resource" "add_argocd_github_app_config_map" {
   depends_on = [null_resource.install_argocd]  
   provisioner "local-exec" { 
     command = <<-EOT
-      PRIVATEKEY=$(vault kv get --field=cert secrets/github-app-cert)
+      #PRIVATEKEY=$(vault kv get --field=cert secrets/github-app-cert)
       cat <<EOF | kubectl apply -f -
       apiVersion: v1
       kind: Secret
@@ -127,7 +127,7 @@ resource "null_resource" "add_argocd_github_app_config_map" {
         url: "https://github.com/teokyllc"
         githubAppID: "${var.argo_git_app_id}"
         githubAppInstallationID: "${var.argo_git_app_installation_id}"
-        githubAppPrivateKey: "$PRIVATEKEY"
+        githubAppPrivateKey: $(vault kv get --field=cert secrets/github-app-cert)
       EOF
     EOT
   }
