@@ -23,7 +23,8 @@ resource "null_resource" "install_argocd" {
       done
       echo $ip
       token=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-      vault kv put secrets/argo token=$token
+      sleep 120
+      vault kv patch secrets/argo token=$token
     EOT
   }
 }
