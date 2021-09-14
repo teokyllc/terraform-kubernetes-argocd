@@ -75,8 +75,6 @@ resource "null_resource" "add_argocd_config_map" {
           ignoreAggregatedRoles: true
           ignoreResourceStatusField: crd
         admin.enabled: "true"
-        #accounts.alice: apiKey, login
-        #accounts.alice.enabled: "false"
         timeout.reconciliation: 180s
       EOF
     EOT
