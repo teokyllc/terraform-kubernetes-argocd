@@ -1,4 +1,4 @@
-variable "aks_kubeconfig" {
+variable "kubeconfig" {
     type = string
     description = "The kubeconfig file from the AKS cluster."
 }
