@@ -3,21 +3,6 @@ variable "aks_kubeconfig" {
     description = "The kubeconfig file from the AKS cluster."
 }
 
-variable "aks_cluster_name" {
-    type = string
-    description = "The name of the AKS cluster to apply ArgoCD to."
-}
-
-variable "aks_cluster_rg" {
-    type = string
-    description = "The name of the resource group the AKS cluster is in."
-}
-
-variable "region" {
-    type = string
-    description = "The Azure region."
-}
-
 variable "github_app_private_key" {
     type = string
     description = "The Github app private key."
