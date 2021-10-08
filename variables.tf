@@ -33,6 +33,16 @@ variable "argo_sso_certificate" {
     description = "The Azure AD SAML certificate for the app."
 }
 
+variable "argo_admin_user_enabled" {
+    type = string
+    description = "Enables the Argo admin user."
+}
+
+variable "argo_anonymous_users_enabled" {
+    type = string
+    description = "Enables anonymous user access to Argo UI."
+}
+
 variable "argo_aad_admin_group_id" {
     type = string
     description = "The Azure AD group ID for administrative access to ArgoCD."
