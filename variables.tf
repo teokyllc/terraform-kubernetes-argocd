@@ -23,12 +23,12 @@ variable "argo_fqdn" {
     description = "The FQDN DNS name for ArgoCD."
 }
 
-variable "sso_login_url" {
+variable "argo_sso_login_url" {
     type = string
     description = "The Azure AD SAML login URL."
 }
 
-variable "sso_certificate" {
+variable "argo_sso_certificate" {
     type = string
     description = "The Azure AD SAML certificate for the app."
 }
