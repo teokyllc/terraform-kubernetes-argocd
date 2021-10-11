@@ -61,8 +61,8 @@ resource "null_resource" "add_argocd_config_map" {
             name: Azure AD SAML
             config:
               entityIssuer: https://${var.argo_fqdn}/api/dex/callback
-              ssoURL: ${var.sso_login_url}
-              caData: ${var.sso_certificate}
+              ssoURL: ${var.argo_sso_login_url}
+              caData: ${var.argo_sso_certificate}
               redirectURI: https://${var.argo_fqdn}/api/dex/callback
               usernameAttr: email
               emailAttr: email
