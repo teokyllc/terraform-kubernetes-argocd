@@ -12,19 +12,11 @@ resource "null_resource" "install_argocd" {
   provisioner "local-exec" { 
     command = <<-EOT
       kubectl create namespace argocd 
-      kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      wget https://raw.githubusercontent.com/teokyllc/terraform-kubernetes-argocd/main/kustomize/argocd-repo-server-deploy.yaml
+      wget https://raw.githubusercontent.com/teokyllc/terraform-kubernetes-argocd/main/kustomize/kustomization.yaml
+      kubectl -n argocd apply -k .
       kubectl annotate svc argocd-server -n argocd service.beta.kubernetes.io/azure-load-balancer-internal=true
       kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
-      ip=""
-      while [ -z $ip ]; do
-        echo "Waiting for external IP"
-        ip=$(kubectl get svc argocd-server --namespace argocd --template="{{range .status.loadBalancer.ingress}}{{.ip}}{{end}}")
-        [ -z "$ip" ] && sleep 10
-      done
-      echo $ip
-      token=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-      sleep 120
-      vault kv patch secrets/argo token=$token
     EOT
   }
 }
@@ -98,12 +90,6 @@ resource "null_resource" "add_argocd_rbac_config_map" {
         policy.default: role:no-access
         policy.csv: |
           p, role:no-access, *, *, */*, deny
-          p, role:org-admin, applications, *, */*, allow
-          p, role:org-admin, clusters, get, *, allow
-          p, role:org-admin, repositories, get, *, allow
-          p, role:org-admin, repositories, create, *, allow
-          p, role:org-admin, repositories, update, *, allow
-          p, role:org-admin, repositories, delete, *, allow
           g, "${var.argo_aad_admin_group_id}", role:org-admin
           g, "${var.argo_aad_read_only_group_id}", role:readonly
       EOF
@@ -133,41 +119,41 @@ resource "null_resource" "add_argocd_github_app_config_map" {
   }
 }
 
-resource "null_resource" "add_argocd_server_tls_certificate" { 
-  depends_on = [null_resource.install_argocd]  
-  provisioner "local-exec" { 
-    command = <<-EOT
-      cat <<EOF | kubectl apply -f -
-      apiVersion: cert-manager.io/v1
-      kind: Certificate
-      metadata:
-        name: argocd-teokyllc-internal
-        namespace: argocd
-      spec:
-        secretName: argocd-server-tls
-        duration: 2160h # 90d
-        renewBefore: 360h # 15d
-        subject:
-          organizations:
-            - teokyllc
-        commonName: argo.teokyllc.internal
-        isCA: false
-        privateKey:
-          algorithm: RSA
-          encoding: PKCS1
-          size: 2048
-        usages:
-          - server auth
-          - client auth
-        dnsNames:
-          - argo.teokyllc.internal
-        ipAddresses:
-          - 10.1.0.5
-        issuerRef:
-          name: vault-issuer
-          kind: ClusterIssuer
-          group: cert-manager.io
-      EOF
-    EOT
-  }
-}
+#resource "null_resource" "add_argocd_server_tls_certificate" { 
+#  depends_on = [null_resource.install_argocd]  
+#  provisioner "local-exec" { 
+#    command = <<-EOT
+#      cat <<EOF | kubectl apply -f -
+#      apiVersion: cert-manager.io/v1
+#      kind: Certificate
+#      metadata:
+#        name: argocd-teokyllc-internal
+#        namespace: argocd
+#      spec:
+#        secretName: argocd-server-tls
+#        duration: 2160h # 90d
+#        renewBefore: 360h # 15d
+#        subject:
+#          organizations:
+#            - teokyllc
+#        commonName: argo.teokyllc.internal
+#        isCA: false
+#        privateKey:
+#          algorithm: RSA
+#          encoding: PKCS1
+#          size: 2048
+#        usages:
+#          - server auth
+#          - client auth
+#        dnsNames:
+#          - argo.teokyllc.internal
+#        ipAddresses:
+#          - 10.1.0.5
+#        issuerRef:
+#          name: vault-issuer
+#          kind: ClusterIssuer
+#          group: cert-manager.io
+#      EOF
+#    EOT
+#  }
+#}
