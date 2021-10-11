@@ -49,7 +49,7 @@ resource "null_resource" "add_argocd_config_map" {
                 command: ["sh", "-c"]
                 args: ["kustomize build . > all.yaml && argocd-vault-plugin generate all.yaml"]
         url: https://${var.argo_fqdn}
-        users.anonymous.enabled: "false"
+        users.anonymous.enabled: ${var.argo_anonymous_users_enabled}
         users.session.duration: "2h"
         dex.config: |
           logger:
@@ -82,7 +82,7 @@ resource "null_resource" "add_argocd_config_map" {
         resource.compareoptions: |
           ignoreAggregatedRoles: true
           ignoreResourceStatusField: crd
-        admin.enabled: "true"
+        admin.enabled: ${var.argo_admin_user_enabled}
         timeout.reconciliation: 180s
       EOF
     EOT
