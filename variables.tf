@@ -3,21 +3,6 @@ variable "kubeconfig" {
     description = "The kubeconfig file from the AKS cluster."
 }
 
-variable "github_app_private_key" {
-    type = string
-    description = "The Github app private key."
-}
-
-variable "argo_git_app_id" {
-    type = string
-    description = "The Github app id."
-}
-
-variable "argo_git_app_installation_id" {
-    type = string
-    description = "The Github app installation id."
-}
-
 variable "argo_fqdn" {
     type = string
     description = "The FQDN DNS name for ArgoCD."
