@@ -89,27 +89,6 @@ resource "null_resource" "add_argocd_config_map" {
   }
 }
 
-resource "null_resource" "add_argocd_rbac_config_map" { 
-  depends_on = [null_resource.install_argocd]  
-  provisioner "local-exec" { 
-    command = <<-EOT
-      cat <<EOF | kubectl apply -f -
-      apiVersion: v1
-      kind: ConfigMap
-      metadata:
-        name: argocd-rbac-cm
-        namespace: argocd
-      data:
-        policy.default: role:no-access
-        policy.csv: |
-          p, role:no-access, *, *, */*, deny
-          g, "${var.argo_aad_admin_group_id}", role:org-admin
-          g, "${var.argo_aad_read_only_group_id}", role:readonly
-      EOF
-    EOT
-  }
-}
-
 #resource "null_resource" "add_argocd_github_app_config_map" { 
 #  depends_on = [null_resource.install_argocd]  
 #  provisioner "local-exec" { 
