@@ -110,27 +110,27 @@ resource "null_resource" "configure_argocd_rbac" {
   }
 }
 
-#resource "null_resource" "add_argocd_github_app_config_map" { 
-#  depends_on = [null_resource.install_argocd]  
-#  provisioner "local-exec" { 
-#    command = <<-EOT
-#      cat <<EOF | kubectl apply -f -
-#      apiVersion: v1
-#      kind: Secret
-#      metadata:
-#        name: github-creds
-#        namespace: argocd
-#        labels:
-#          argocd.argoproj.io/secret-type: repo-creds
-#      stringData:
-#        url: "https://github.com/teokyllc"
-#        githubAppID: "${var.argo_git_app_id}"
-#        githubAppInstallationID: "${var.argo_git_app_installation_id}"
-#        githubAppPrivateKey: "${var.github_app_private_key}"
-#      EOF
-#    EOT
-#  }
-#}
+resource "null_resource" "add_argocd_github_app_config_map" { 
+  depends_on = [null_resource.install_argocd]  
+  provisioner "local-exec" { 
+    command = <<-EOT
+      cat <<EOF | kubectl apply -f -
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: github-creds
+        namespace: ${var.argocd_namespace}
+        labels:
+          argocd.argoproj.io/secret-type: repo-creds
+      stringData:
+        url: "https://github.com/teokyllc"
+        githubAppID: "${var.argo_git_app_id}"
+        githubAppInstallationID: "${var.argo_git_app_installation_id}"
+        githubAppPrivateKey: "${var.github_app_private_key}"
+      EOF
+    EOT
+  }
+}
 
 #resource "null_resource" "add_argocd_server_tls_certificate" { 
 #  depends_on = [null_resource.install_argocd]  
