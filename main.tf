@@ -21,8 +21,8 @@ resource "null_resource" "install_argocd" {
   }
 }
 
-resource "null_resource" "install_argocd" { 
-  depends_on = [null_resource.setup_env]  
+resource "null_resource" "configure_argocd" { 
+  depends_on = [null_resource.install_argocd]  
   provisioner "local-exec" { 
     command = <<-EOT
       cat <<EOF | kubectl apply -f -
