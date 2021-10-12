@@ -136,6 +136,7 @@ resource "null_resource" "add_argocd_server_tls_certificate" {
   depends_on = [null_resource.install_argocd]  
   provisioner "local-exec" { 
     command = <<-EOT
+      sleep 120
       cat <<EOF | kubectl apply -f -
       apiVersion: cert-manager.io/v1
       kind: Certificate
