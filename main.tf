@@ -11,12 +11,12 @@ resource "null_resource" "install_argocd" {
   depends_on = [null_resource.setup_env]  
   provisioner "local-exec" { 
     command = <<-EOT
-      kubectl create namespace argocd 
+      kubectl create namespace ${var.argocd_namespace}
       wget https://raw.githubusercontent.com/teokyllc/terraform-kubernetes-argocd/main/kustomize/argocd-repo-server-deploy.yaml
       wget https://raw.githubusercontent.com/teokyllc/terraform-kubernetes-argocd/main/kustomize/kustomization.yaml
-      kubectl -n argocd apply -k .
-      kubectl annotate svc argocd-server -n argocd service.beta.kubernetes.io/azure-load-balancer-internal=true
-      kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+      kubectl -n ${var.argocd_namespace} apply -k .
+      kubectl annotate svc argocd-server -n ${var.argocd_namespace} service.beta.kubernetes.io/azure-load-balancer-internal=true
+      kubectl patch svc argocd-server -n ${var.argocd_namespace} -p '{"spec": {"type": "LoadBalancer"}}'
     EOT
   }
 }
@@ -30,13 +30,13 @@ resource "null_resource" "configure_argocd" {
       kind: ConfigMap
       metadata:
         name: argocd-cm
-        namespace: argocd
+        namespace: ${var.argocd_namespace}
         labels:
           app.kubernetes.io/name: argocd-cm
           app.kubernetes.io/part-of: argocd
       data:
         url: https://${var.argo_fqdn}/
-        users.anonymous.enabled: "false"
+        users.anonymous.enabled: "$argo_anonymous_users_enabled"
         users.session.duration: "1h"
         dex.config: |
           logger:
@@ -69,7 +69,7 @@ resource "null_resource" "configure_argocd" {
         resource.compareoptions: |
           ignoreAggregatedRoles: true
           ignoreResourceStatusField: crd
-        admin.enabled: "true"
+        admin.enabled: "${var.argo_admin_user_enabled}"
         timeout.reconciliation: 180s
       EOF
     EOT
