@@ -3,6 +3,11 @@ variable "kubeconfig" {
     description = "The kubeconfig file from the AKS cluster."
 }
 
+variable "argocd_namespace" {
+    type = string
+    description = "The Kubernetes namespace for ArgoCD."
+}
+
 variable "argo_fqdn" {
     type = string
     description = "The FQDN DNS name for ArgoCD."
