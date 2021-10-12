@@ -42,3 +42,18 @@ variable "argo_aad_read_only_group_id" {
     type = string
     description = "The Azure AD group ID for read-only access to ArgoCD."
 }
+
+variable "argo_git_app_id" {
+    type = string
+    description = "The Github application ID on the Github App."
+}
+
+variable "argo_git_app_installation_id" {
+    type = string
+    description = "The Github application installation ID on the Github App."
+}
+
+variable "github_app_private_key" {
+    type = string
+    description = "The Github application private key on the Github App."
+}
