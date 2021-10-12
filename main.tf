@@ -35,19 +35,19 @@ resource "null_resource" "configure_argocd" {
           app.kubernetes.io/name: argocd-cm
           app.kubernetes.io/part-of: argocd
       data:
-          configManagementPlugins: |
-            - name: argocd-vault-plugin
-              generate:
-                command: ["argocd-vault-plugin"]
-                args: ["generate", "./"]
-            - name: argocd-vault-plugin-helm
-              generate:
-                command: ["sh", "-c"]
-                args: ["helm template . > all.yaml && argocd-vault-plugin generate all.yaml"]
-            - name: argocd-vault-plugin-kustomize
-              generate:
-                command: ["sh", "-c"]
-                args: ["kustomize build . > all.yaml && argocd-vault-plugin generate all.yaml"]
+        configManagementPlugins: |
+          - name: argocd-vault-plugin
+            generate:
+              command: ["argocd-vault-plugin"]
+              args: ["generate", "./"]
+          - name: argocd-vault-plugin-helm
+            generate:
+              command: ["sh", "-c"]
+              args: ["helm template . > all.yaml && argocd-vault-plugin generate all.yaml"]
+          - name: argocd-vault-plugin-kustomize
+            generate:
+              command: ["sh", "-c"]
+              args: ["kustomize build . > all.yaml && argocd-vault-plugin generate all.yaml"]
         url: https://${var.argo_fqdn}/
         users.anonymous.enabled: "$argo_anonymous_users_enabled"
         users.session.duration: "1h"
