@@ -132,6 +132,27 @@ resource "null_resource" "add_argocd_github_app_config_map" {
   }
 }
 
+resource "null_resource" "add_argocd_vault_plugin_secret" { 
+  depends_on = [null_resource.install_argocd]  
+  provisioner "local-exec" { 
+    command = <<-EOT
+      cat <<EOF | kubectl apply -f -
+      kind: Secret
+      apiVersion: v1
+      metadata:
+        name: argocd-vault-plugin-credentials
+        namespace: argocd
+      type: Opaque
+      stringData:
+        AVP_AUTH_TYPE: approle
+        AVP_TYPE: vault 
+        AVP_ROLE_ID: 92c2aaa5-a920-5538-aef2-5212e2f88396
+        AVP_SECRET_ID: ${var.secret_id}
+      EOF
+    EOT
+  }
+}
+
 resource "null_resource" "add_argocd_server_tls_certificate" { 
   depends_on = [null_resource.install_argocd]  
   provisioner "local-exec" { 
