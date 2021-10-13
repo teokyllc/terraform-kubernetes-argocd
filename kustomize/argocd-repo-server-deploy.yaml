@@ -8,4 +8,7 @@ spec:
       containers:
       - name: argocd-repo-server
         image: teokyllc.azurecr.io/argocd:latest
+        envFrom:
+          - secretRef:
+              name: argocd-vault-plugin-credentials
       automountServiceAccountToken: true
