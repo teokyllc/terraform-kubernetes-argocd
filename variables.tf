@@ -58,7 +58,7 @@ variable "github_app_private_key" {
     description = "The Github application private key on the Github App."
 }
 
-variable "secret_id" {
+variable "avp_secret_id" {
     type = string
     description = "The AVP secret id."
 }
