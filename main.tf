@@ -147,7 +147,7 @@ resource "null_resource" "add_argocd_vault_plugin_secret" {
         AVP_AUTH_TYPE: approle
         AVP_TYPE: vault 
         AVP_ROLE_ID: 92c2aaa5-a920-5538-aef2-5212e2f88396
-        AVP_SECRET_ID: ${var.secret_id}
+        AVP_SECRET_ID: ${var.avp_secret_id}
       EOF
     EOT
   }
